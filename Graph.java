@@ -100,7 +100,9 @@ class MyData extends JPanel {
 
 class MyCanvas extends JPanel {
     ArrayList<Integer> data = new ArrayList<Integer>();
-    int join=0;
+    boolean join=true;
+    boolean point=true;
+    boolean label=false;
 
     final int PAD = 30;
     private Graphics2D g2;
@@ -177,7 +179,7 @@ class MyCanvas extends JPanel {
         for(int i = 0; i < data.size(); i++) {
             x = PAD + i*xInc;
             y = h - PAD - scale*data.get(i);
-	    if(join == 1) {
+	    if(join) {
 		if(i<data.size()-1) {
 		    x_ = PAD + (i+1)*xInc;
 		    y_ = h- PAD - scale*data.get(i+1);
@@ -186,8 +188,19 @@ class MyCanvas extends JPanel {
 		g2.draw(new Line2D.Double(x, y , x_ , y_ ));
 	    }
 
-	    g2.setPaint(Color.red);
-            g2.fill(new Ellipse2D.Double(x-2, y-2, 4, 4));
+	    if (point) {
+		g2.setPaint(Color.red);
+		g2.fill(new Ellipse2D.Double(x-2, y-2, 4, 4));
+	    }
+
+	    if (label) {
+		String l="("+String.valueOf(i);
+		l+=",";
+		l+=String.valueOf(data.get(i));
+		l+=")";
+		g2.setPaint(Color.black);
+		g2.drawString(l, (float)x_+3, (float)y_-3);
+	    }
         }
     }
 
@@ -238,26 +251,28 @@ class Root extends JFrame{
 	_gbc.fill=GridBagConstraints.NONE;
 	_gbc.anchor=GridBagConstraints.FIRST_LINE_START;
 
-	JLabel label = new JLabel("Graph Demo");
 	gbc=_gbc;
-	panel.add(label, gbc);
 
-	JCheckBox join_pts = new JCheckBox("Join Points");
-	gbc.gridy=1;
+	JCheckBox join_pts = new JCheckBox("Join Points", true);
 	panel.add(join_pts, gbc);
 
-	JCheckBox pts_label = new JCheckBox("Show Point Value");
+	JCheckBox pts_show = new JCheckBox("Show Point", true);
 	gbc.gridx=1;
+	panel.add(pts_show, gbc);
+
+	JCheckBox pts_label = new JCheckBox("Point Label");
+	gbc.gridx=2;
 	panel.add(pts_label, gbc);
 
         JButton clear = new JButton("Clear");
-	gbc.gridx=2;
+	gbc.gridx=3;
 	gbc.anchor=GridBagConstraints.LAST_LINE_END;
+	gbc.insets= new Insets(2, 10, 0, 0);
 	panel.add(clear, gbc);
 
 	canvas = new MyCanvas();
-	gbc.gridx=0; gbc.gridy=2;
-	gbc.gridwidth = 3; gbc.gridheight = 1;
+	gbc.gridx=0; gbc.gridy=1;
+	gbc.gridwidth = 4; gbc.gridheight = 1;
 	gbc.weightx = 1; gbc.weighty = 1;
 	gbc.insets= new Insets(10, 25, 10, 25);
 	gbc.fill=GridBagConstraints.BOTH;
@@ -266,11 +281,10 @@ class Root extends JFrame{
 
 	MyData mydata = new MyData();
 	gbc=_gbc;
-	gbc.gridy=3;
+	gbc.gridx=1; gbc.gridy=2;
 	gbc.weightx = 0; gbc.weighty = 0;
-	gbc.gridwidth = 3; gbc.gridheight = 1;
+	gbc.gridwidth = 4; gbc.gridheight = 1;
 	gbc.fill=GridBagConstraints.BOTH;
-	//gbc.anchor=GridBagConstraints.FIRST_LINE_START;
 	panel.add(mydata, gbc);
 
 	clear.addMouseListener(new MouseAdapter() {
@@ -281,20 +295,21 @@ class Root extends JFrame{
 
         join_pts.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    join_points();
+		    canvas.join = !canvas.join;
+		    repaint();
 		}});
-    }
 
-    public void join_points() {
-    	switch(canvas.join){
-	case 0:
-	    canvas.join = 1;
-	    break;
-	case 1:
-	    canvas.join = 0;
-	    break;
-	}
-    	repaint();
+        pts_show.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    canvas.point = !canvas.point;
+		    repaint();
+		}});
+
+        pts_label.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    canvas.label = !canvas.label;
+		    repaint();
+		}});
     }
 }
 
