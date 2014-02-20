@@ -1,4 +1,4 @@
 run:
 	rm -f *.class
-	javac graph.java
-	java graph
+	javac Graph.java
+	java Graph
