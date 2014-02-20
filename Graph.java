@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.*;
 import java.awt.geom.*;
-
+import java.util.ArrayList;
 
 class MyData extends JPanel {
     JTextField xentry, yentry;
@@ -20,7 +20,6 @@ class MyData extends JPanel {
     };
 
     public MyData() {
-	//setBorder(BorderFactory.createEtchedBorder());
 	build();
     }
 
@@ -74,8 +73,7 @@ class MyData extends JPanel {
         add.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    add_data_point();
-		}
-	    });
+		}});
     }
 
     public void add_data_point(){
@@ -92,16 +90,16 @@ class MyData extends JPanel {
 	if (sx != "") _x = Double.parseDouble(sx);
 	if (sy != "") _y = Double.parseDouble(sy);
 
-	DefaultTableModel model = (DefaultTableModel) table.getModel();
-	model.addRow(new Object[]{_x, _y});
+	// canvas.data.add((int)_x);
+	// repaint();
+
+	// DefaultTableModel model = (DefaultTableModel) table.getModel();
+	// model.addRow(new Object[]{_x, _y});
     }
 }
 
 class MyCanvas extends JPanel {
-    int[] data = {
-        21, 14, 18, 03, 86, 88, 74, 87, 54, 77,
-        61, 55, 48, 60, 49, 36, 38, 27, 20, 18
-    };
+    ArrayList<Integer> data = new ArrayList<Integer>();
     int join=0;
 
     final int PAD = 30;
@@ -113,9 +111,19 @@ class MyCanvas extends JPanel {
 
     public MyCanvas() {
 	setBorder(BorderFactory.createEtchedBorder());
+	setBackground(Color.white);
+	build();
     }
 
     public void build() {
+	int[] raw_data = {
+	    21, 14, 18, 03, 86, 88, 74, 87, 54, 77,
+	    61, 55, 48, 60, 49, 36, 38, 27, 20, 18
+	};
+
+	for(int i=0; i < raw_data.length; i++) {
+	    data.add(raw_data[i]);
+	}
     }
 
     protected void paintComponent(Graphics g) {
@@ -161,19 +169,19 @@ class MyCanvas extends JPanel {
 
 	if (data==null) return;
 
-	xInc = (double)(w - 2*PAD)/(data.length-1);
+	xInc = (double)(w - 2*PAD)/(data.size()-1);
 	scale = (double)(h - 2*PAD)/getMax();
 
         // Mark data points.
-	double x, y, x_, y_=0;
-        for(int i = 0; i < data.length; i++) {
+	double x, y, x_=0, y_=0;
+        for(int i = 0; i < data.size(); i++) {
             x = PAD + i*xInc;
-	    x_ = PAD + (i+1)*xInc;
-            y = h - PAD - scale*data[i];
-	    if(i<data.length-1)
-		y_ = h- PAD - scale*data[i+1];
-
+            y = h - PAD - scale*data.get(i);
 	    if(join == 1) {
+		if(i<data.size()-1) {
+		    x_ = PAD + (i+1)*xInc;
+		    y_ = h- PAD - scale*data.get(i+1);
+		}
 		g2.setPaint(Color.green.darker());
 		g2.draw(new Line2D.Double(x, y , x_ , y_ ));
 	    }
@@ -185,9 +193,9 @@ class MyCanvas extends JPanel {
 
     private int getMax() {
         int max = -Integer.MAX_VALUE;
-        for(int i = 0; i < data.length; i++) {
-            if(data[i] > max)
-                max = data[i];
+        for(int i = 0; i < data.size(); i++) {
+            if(data.get(i) > max)
+                max = data.get(i);
         }
         return max;
     }
@@ -267,17 +275,14 @@ class Root extends JFrame{
 
 	clear.addMouseListener(new MouseAdapter() {
 		public void mouseClicked(MouseEvent e){
-		    canvas.nullData();
+		    canvas.data.clear();
 		    repaint();
-		}
-	    }
-	    );
+		}});
 
         join_pts.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    join_points();
-		}
-	    });
+		}});
     }
 
     public void join_points() {
