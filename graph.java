@@ -5,6 +5,8 @@ import java.awt.font.*;
 import java.awt.geom.*;
 
 class MyData extends JPanel {
+    JTextField xentry, yentry;
+    JTable table;
     String[] columnNames = {"x-axis", "y-axis",};
     Object[][] data = {
 	{5, 10},
@@ -23,7 +25,7 @@ class MyData extends JPanel {
 	setLayout(new GridBagLayout());
 	GridBagConstraints gbc = new GridBagConstraints();
 
-        final JTable table = new JTable(data, columnNames);
+        table = new JTable(data, columnNames);
         table.setPreferredScrollableViewportSize(new Dimension(100, 70));
         //table.setFillsViewportHeight(true);
         //table.setFillsViewportWidth(true);
@@ -48,13 +50,13 @@ class MyData extends JPanel {
 	gbc.gridx=1; gbc.gridy=1;
 	add(label, gbc);
 
-	JTextField xentry = new JTextField();
+	xentry = new JTextField();
 	gbc.gridx=2; gbc.gridy=0;
 	gbc.weightx = 1; gbc.weighty = 0;
 	gbc.fill=GridBagConstraints.HORIZONTAL;
 	add(xentry, gbc);
 
-	JTextField yentry = new JTextField();
+	yentry = new JTextField();
 	gbc.gridx=2; gbc.gridy=1;
 	add(yentry, gbc);
 
@@ -74,10 +76,22 @@ class MyData extends JPanel {
     }
 
     public void add_data_point(){
-	System.out.println("Add Data Point");
+	String sx = xentry.getText();
+	String sy = yentry.getText();
 
+        // if (s.length() <= 0) {
+        //     message("Nothing to search");
+        //     return;
+        // }
+	double _x=0;
+	double _y=0;
+
+	if (sx != "") _x = Double.parseDouble(sx);
+	if (sy != "") _y = Double.parseDouble(sy);
+
+	DefaultTableModel model = (DefaultTableModel) table.getModel();
+	model.addRow(new Object[]{_x, _y});
     }
-
 }
 
 class MyCanvas extends JPanel {
@@ -228,6 +242,7 @@ class Root extends JFrame{
 	clear.addMouseListener(new MouseAdapter() {
 		public void mouseClicked(MouseEvent e){
 		    canvas.clear_canvas();
+
 		}
 	    }
 	    );
@@ -240,7 +255,7 @@ class Root extends JFrame{
     }
 
     public void join_points() {
-	//JOptionPane.showMessageDialog(this, "Join Point button pressed");
+	JOptionPane.showMessageDialog(this, "Join Point button pressed");
     }
 }
 
