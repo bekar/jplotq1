@@ -129,6 +129,9 @@ class MyData extends JPanel {
 
 	if (sx != "") _x = Double.parseDouble(sx);
 	if (sy != "") _y = Double.parseDouble(sy);
+	Object [] newdata = { _x, _y };
+
+	table.setValueAt(newdata, table.getRowCount(), table.getColumnCount());
 
 	// canvas.data.add((int)_x);
 	// repaint();
@@ -139,7 +142,7 @@ class MyData extends JPanel {
 }
 
 class MyCanvas extends JPanel {
-    ArrayList<Integer> data = new ArrayList<Integer>();
+    public ArrayList<Integer> data = new ArrayList<Integer>();
     boolean join=true;
     boolean point=true;
     boolean label=false;
