@@ -9,10 +9,10 @@ import java.awt.geom.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-class MyData extends JPanel {
+class MyPlot extends JPanel {
     JTextField xentry, yentry;
     JTable table;
-
+    MyCanvas canvas;
     boolean rand_fill=true;
 
     Random seed = new Random();
@@ -23,7 +23,7 @@ class MyData extends JPanel {
 
     DefaultTableModel dtm = new DefaultTableModel(data, colNames);
 
-    public MyData() {
+    public MyPlot() {
 	build();
     }
 
@@ -31,52 +31,65 @@ class MyData extends JPanel {
 	setLayout(new GridBagLayout());
 	GridBagConstraints gbc = new GridBagConstraints();
 
+	canvas = new MyCanvas();
+	gbc.gridx=0; gbc.gridy=0;
+	gbc.gridwidth = 4; gbc.gridheight = 1;
+	gbc.weightx = 1; gbc.weighty = 1;
+	// gbc.insets= new Insets(0, 0, 0, 0);
+	gbc.fill=GridBagConstraints.BOTH;
+	gbc.anchor=GridBagConstraints.CENTER;
+	add(canvas, gbc);
+
+
 	table = new JTable(dtm);
         table.setPreferredScrollableViewportSize(new Dimension(100, 80));
-
         //Create the scroll pane and add the table to it.
         JScrollPane scrollPane = new JScrollPane(table);
 
-	gbc.anchor=GridBagConstraints.FIRST_LINE_START;
-	gbc.gridx=0; gbc.gridy=0;
-	gbc.gridwidth = 1; gbc.gridheight = 4;
-	gbc.fill=GridBagConstraints.BOTH;
+	gbc.gridx=4; gbc.gridy=0;
+	gbc.gridwidth = 4; gbc.gridheight = 1;
+	gbc.weightx = 0; gbc.weighty = 0;
+	gbc.anchor=GridBagConstraints.CENTER;
+	gbc.fill=GridBagConstraints.VERTICAL;
         add(scrollPane, gbc);
 
 	JLabel label = new JLabel("x: ");
-	gbc.gridx=1; gbc.gridy=0;
+	gbc.gridx=2; gbc.gridy=1;
 	gbc.gridwidth = 1; gbc.gridheight = 1;
-	gbc.fill=GridBagConstraints.HORIZONTAL;
-	gbc.insets = new Insets(2,10,2,10);
+	gbc.weightx = 1; gbc.weighty = 0;
+	gbc.fill=GridBagConstraints.NONE;
+	gbc.anchor=GridBagConstraints.LINE_END;
 	add(label, gbc);
 
 	label = new JLabel("y: ");
-	gbc.gridx=1; gbc.gridy=1;
+	gbc.gridx=2; gbc.gridy=2;
 	add(label, gbc);
 
 	xentry = new JTextField();
 	xentry.setText("0.0");
-	gbc.gridx=2; gbc.gridy=0;
-	gbc.weightx = 1; gbc.weighty = 0;
+	gbc.gridx=3; gbc.gridy=1;
+	gbc.gridwidth = 1; gbc.gridheight = 1;
 	gbc.fill=GridBagConstraints.HORIZONTAL;
+	gbc.weightx = 1; gbc.weighty = 0;
 	add(xentry, gbc);
 
 	yentry = new JTextField();
 	yentry.setText("0.0");
-	gbc.gridx=2; gbc.gridy=1;
+	gbc.gridx=3; gbc.gridy=2;
 	add(yentry, gbc);
 
-	JCheckBox rand_gen = new JCheckBox("Random Generate", true);
-	gbc.gridx=2; gbc.gridy=2;
-	add(rand_gen, gbc);
-
         JButton add_btn = new JButton("Add");
-	gbc.gridx=3; gbc.gridy=0;
-	gbc.insets = new Insets(0,0,0,0);
-	gbc.gridwidth = 1; gbc.gridheight = 2;
-	gbc.fill=GridBagConstraints.VERTICAL;
-	gbc.anchor=GridBagConstraints.FIRST_LINE_START;
+	gbc.gridx=4; gbc.gridy=1;
+	gbc.gridwidth = 4; gbc.gridheight = 2;
+	gbc.weightx = 0; gbc.weighty = 0;
+	gbc.fill=GridBagConstraints.BOTH;
+	gbc.anchor=GridBagConstraints.CENTER;
 	add(add_btn, gbc);
+
+	JCheckBox rand_gen = new JCheckBox("Random Generate", true);
+	gbc.gridx=0; gbc.gridy=1;
+	gbc.gridwidth = 1; gbc.gridheight = 1;
+	add(rand_gen, gbc);
 
         add_btn.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -106,13 +119,15 @@ class MyData extends JPanel {
 	    xentry.setText(String.valueOf(100*seed.nextDouble()));
 	    yentry.setText(String.valueOf(50*seed.nextDouble()));
 	}
-        // canvas.data.add((int)_x);
-	// repaint();
+
+        canvas.data.add(_x);
+	repaint();
     }
 }
 
 class MyCanvas extends JPanel {
     public ArrayList<Integer> data = new ArrayList<Integer>();
+
     boolean join=true;
     boolean point=true;
     boolean label=false;
@@ -127,18 +142,17 @@ class MyCanvas extends JPanel {
     public MyCanvas() {
 	setBorder(BorderFactory.createEtchedBorder());
 	setBackground(Color.white);
-	build();
     }
 
-    public void build() {
-	int[] raw_data = {
-	    21, 14, 18, 03, 86, 88, 74, 87, 54, 77,
-	    61, 55, 48, 60, 49, 36, 38, 27, 20, 18
-	};
-
-	for(int i=0; i < raw_data.length; i++) {
-	    data.add(raw_data[i]);
+    public void update_data(DefaultTableModel dtm) {
+	for(int i=0; i < dtm.getRowCount(); i++) {
+	    //dtm.getValueAt(i, 1)
+	    data.add(5);
 	}
+
+	// for(int i=0; i < raw_data.length; i++) {
+	//     data.add(raw_data[i]);
+	// }
     }
 
     protected void paintComponent(Graphics g) {
@@ -155,8 +169,7 @@ class MyCanvas extends JPanel {
         //x-axis
         g2.draw(new Line2D.Double(PAD, h-PAD, w-PAD, h-PAD));
 
-        double xInc = 0; //(double)(w - 2*PAD)/(data.length-1);
-        double scale = 0; //(double)(h - 2*PAD)/getMax();
+        double xInc = 0, scale = 0;
 
 	//label-maker
 	Font font = g2.getFont();
@@ -248,7 +261,7 @@ class Root extends JFrame{
 	    });
     }
 
-    MyCanvas canvas;
+    MyPlot plot;
     public void build(Container panel) {
 	panel.setLayout(new GridBagLayout());
 	GridBagConstraints gbc = new GridBagConstraints();
@@ -281,44 +294,37 @@ class Root extends JFrame{
 	gbc.insets= new Insets(2, 10, 0, 0);
 	panel.add(clear, gbc);
 
-	canvas = new MyCanvas();
+	plot = new MyPlot();
 	gbc.gridx=0; gbc.gridy=1;
 	gbc.gridwidth = 4; gbc.gridheight = 1;
 	gbc.weightx = 1; gbc.weighty = 1;
-	gbc.insets= new Insets(10, 25, 10, 25);
+	gbc.insets= new Insets(0, 0, 0, 0);
+	//gbc.insets= new Insets(10, 25, 10, 25);
 	gbc.fill=GridBagConstraints.BOTH;
 	gbc.anchor=GridBagConstraints.CENTER;
-	panel.add(canvas, gbc);
-
-	MyData mydata = new MyData();
-	gbc=_gbc;
-	gbc.gridx=1; gbc.gridy=2;
-	gbc.weightx = 0; gbc.weighty = 0;
-	gbc.gridwidth = 4; gbc.gridheight = 1;
-	gbc.fill=GridBagConstraints.BOTH;
-	panel.add(mydata, gbc);
+	panel.add(plot, gbc);
 
 	clear.addMouseListener(new MouseAdapter() {
 		public void mouseClicked(MouseEvent e){
-		    canvas.data.clear();
+		    plot.canvas.data.clear();
 		    repaint();
 		}});
 
         join_pts.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    canvas.join = !canvas.join;
+		    plot.canvas.join = !plot.canvas.join;
 		    repaint();
 		}});
 
         pts_show.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    canvas.point = !canvas.point;
+		    plot.canvas.point = !plot.canvas.point;
 		    repaint();
 		}});
 
         pts_label.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    canvas.label = !canvas.label;
+		    plot.canvas.label = !plot.canvas.label;
 		    repaint();
 		}});
     }
