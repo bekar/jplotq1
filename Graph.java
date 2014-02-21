@@ -7,19 +7,20 @@ import java.awt.event.*;
 import java.awt.font.*;
 import java.awt.geom.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 class MyData extends JPanel {
     JTextField xentry, yentry;
     JTable table;
 
+    boolean rand_fill=true;
+
+    Random seed = new Random();
     public String[] colNames = {"x-axis", "y-axis",};
     public Object[][] data = {
-	{5, 10},
-	{15, 20},
-	{5, 120},
-	{65, 10},
-	{25, 40}
+	{16, 10},
     };
+
     DefaultTableModel dtm = new DefaultTableModel(data, colNames);
 
     public MyData() {
@@ -31,7 +32,7 @@ class MyData extends JPanel {
 	GridBagConstraints gbc = new GridBagConstraints();
 
 	table = new JTable(dtm);
-        table.setPreferredScrollableViewportSize(new Dimension(100, 70));
+        table.setPreferredScrollableViewportSize(new Dimension(100, 80));
 
         //Create the scroll pane and add the table to it.
         JScrollPane scrollPane = new JScrollPane(table);
@@ -65,17 +66,26 @@ class MyData extends JPanel {
 	gbc.gridx=2; gbc.gridy=1;
 	add(yentry, gbc);
 
-        JButton add = new JButton("Add");
+	JCheckBox rand_gen = new JCheckBox("Random Generate", true);
+	gbc.gridx=2; gbc.gridy=2;
+	add(rand_gen, gbc);
+
+        JButton add_btn = new JButton("Add");
 	gbc.gridx=3; gbc.gridy=0;
 	gbc.insets = new Insets(0,0,0,0);
 	gbc.gridwidth = 1; gbc.gridheight = 2;
 	gbc.fill=GridBagConstraints.VERTICAL;
 	gbc.anchor=GridBagConstraints.FIRST_LINE_START;
-	add(add, gbc);
+	add(add_btn, gbc);
 
-        add.addActionListener(new ActionListener() {
+        add_btn.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    add_data_point();
+		}});
+
+        rand_gen.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    rand_fill=!rand_fill;
 		}});
     }
 
@@ -83,15 +93,20 @@ class MyData extends JPanel {
 	String sx = xentry.getText();
 	String sy = yentry.getText();
 
-	double _x=0;
-	double _y=0;
+	int _x=0;
+	int _y=0;
 
-	if (sx != "") _x = Double.parseDouble(sx);
-	if (sy != "") _y = Double.parseDouble(sy);
+	if (sx != "") _x = (int)Double.parseDouble(sx);
+	if (sy != "") _y = (int)Double.parseDouble(sy);
 	Object [] newdata = { _x, _y };
 
 	dtm.addRow(newdata);
-	// canvas.data.add((int)_x);
+
+	if (rand_fill) {
+	    xentry.setText(String.valueOf(100*seed.nextDouble()));
+	    yentry.setText(String.valueOf(50*seed.nextDouble()));
+	}
+        // canvas.data.add((int)_x);
 	// repaint();
     }
 }
@@ -192,10 +207,8 @@ class MyCanvas extends JPanel {
 	    }
 
 	    if (label) {
-		String l="("+String.valueOf(i);
-		l+=",";
-		l+=String.valueOf(data.get(i));
-		l+=")";
+		String l="("+String.valueOf(i)+",";
+		l+=String.valueOf(data.get(i))+")";
 		g2.setPaint(Color.black);
 		g2.drawString(l, (float)x_+3, (float)y_-3);
 	    }
