@@ -1,5 +1,6 @@
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+// import javax.swing.table.DefaultTableModel;
+import javax.swing.table.AbstractTableModel;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -10,14 +11,6 @@ import java.util.ArrayList;
 class MyData extends JPanel {
     JTextField xentry, yentry;
     JTable table;
-    String[] columnNames = {"x-axis", "y-axis",};
-    Object[][] data = {
-	{5, 10},
-	{15, 20},
-	{5, 120},
-	{65, 10},
-	{25, 40}
-    };
 
     public MyData() {
 	build();
@@ -27,7 +20,8 @@ class MyData extends JPanel {
 	setLayout(new GridBagLayout());
 	GridBagConstraints gbc = new GridBagConstraints();
 
-        table = new JTable(data, columnNames);
+        table = new JTable(new MyTableModel());
+        //table = new JTable(data, columnNames);
         table.setPreferredScrollableViewportSize(new Dimension(100, 70));
         //table.setFillsViewportHeight(true);
         //table.setFillsViewportWidth(true);
@@ -74,6 +68,52 @@ class MyData extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 		    add_data_point();
 		}});
+    }
+
+    class MyTableModel extends AbstractTableModel {
+	private String[] columnNames = {"x-axis", "y-axis",};
+	private Object[][] data = {
+	    {5, 10},
+	    {15, 20},
+	    {5, 120},
+	    {65, 10},
+	    {25, 40}
+	};
+
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        public int getRowCount() {
+            return data.length;
+        }
+
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        public Object getValueAt(int row, int col) {
+            return data[row][col];
+        }
+
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+
+        public boolean isCellEditable(int row, int col) { // only for editable
+            //Note that the data/cell address is constant,
+            //no matter where the cell appears onscreen.
+            if (col < 2) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        public void setValueAt(Object value, int row, int col) { // only for editable
+            data[row][col] = value;
+            fireTableCellUpdated(row, col);
+        }
     }
 
     public void add_data_point(){
