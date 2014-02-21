@@ -47,12 +47,14 @@ class MyData extends JPanel {
 	add(label, gbc);
 
 	xentry = new JTextField();
+	xentry.setText("0.0");
 	gbc.gridx=2; gbc.gridy=0;
 	gbc.weightx = 1; gbc.weighty = 0;
 	gbc.fill=GridBagConstraints.HORIZONTAL;
 	add(xentry, gbc);
 
 	yentry = new JTextField();
+	yentry.setText("0.0");
 	gbc.gridx=2; gbc.gridy=1;
 	add(yentry, gbc);
 
@@ -131,7 +133,8 @@ class MyData extends JPanel {
 	if (sy != "") _y = Double.parseDouble(sy);
 	Object [] newdata = { _x, _y };
 
-	table.setValueAt(newdata, table.getRowCount(), table.getColumnCount());
+	table.setValueAt(newdata, table.getRowCount()-1, table.getColumnCount()-1);
+	//System.out.println(table.getRowCount());
 
 	// canvas.data.add((int)_x);
 	// repaint();
