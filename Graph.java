@@ -1,5 +1,5 @@
 import javax.swing.*;
-// import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.AbstractTableModel;
 
 import java.awt.*;
@@ -12,6 +12,16 @@ class MyData extends JPanel {
     JTextField xentry, yentry;
     JTable table;
 
+    public String[] colNames = {"x-axis", "y-axis",};
+    public Object[][] data = {
+	{5, 10},
+	{15, 20},
+	{5, 120},
+	{65, 10},
+	{25, 40}
+    };
+    DefaultTableModel dtm = new DefaultTableModel(data, colNames);
+
     public MyData() {
 	build();
     }
@@ -20,11 +30,8 @@ class MyData extends JPanel {
 	setLayout(new GridBagLayout());
 	GridBagConstraints gbc = new GridBagConstraints();
 
-        table = new JTable(new MyTableModel());
-        //table = new JTable(data, columnNames);
+	table = new JTable(dtm);
         table.setPreferredScrollableViewportSize(new Dimension(100, 70));
-        //table.setFillsViewportHeight(true);
-        //table.setFillsViewportWidth(true);
 
         //Create the scroll pane and add the table to it.
         JScrollPane scrollPane = new JScrollPane(table);
@@ -72,60 +79,10 @@ class MyData extends JPanel {
 		}});
     }
 
-    class MyTableModel extends AbstractTableModel {
-	private String[] columnNames = {"x-axis", "y-axis",};
-	private Object[][] data = {
-	    {5, 10},
-	    {15, 20},
-	    {5, 120},
-	    {65, 10},
-	    {25, 40}
-	};
-
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        public int getRowCount() {
-            return data.length;
-        }
-
-        public String getColumnName(int col) {
-            return columnNames[col];
-        }
-
-        public Object getValueAt(int row, int col) {
-            return data[row][col];
-        }
-
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
-        }
-
-        public boolean isCellEditable(int row, int col) { // only for editable
-            //Note that the data/cell address is constant,
-            //no matter where the cell appears onscreen.
-            if (col < 2) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        public void setValueAt(Object value, int row, int col) { // only for editable
-            data[row][col] = value;
-            fireTableCellUpdated(row, col);
-        }
-    }
-
     public void add_data_point(){
 	String sx = xentry.getText();
 	String sy = yentry.getText();
 
-        // if (s.length() <= 0) {
-        //     message("Nothing to search");
-        //     return;
-        // }
 	double _x=0;
 	double _y=0;
 
@@ -133,14 +90,9 @@ class MyData extends JPanel {
 	if (sy != "") _y = Double.parseDouble(sy);
 	Object [] newdata = { _x, _y };
 
-	table.setValueAt(newdata, table.getRowCount()-1, table.getColumnCount()-1);
-	//System.out.println(table.getRowCount());
-
+	dtm.addRow(newdata);
 	// canvas.data.add((int)_x);
 	// repaint();
-
-	// DefaultTableModel model = (DefaultTableModel) table.getModel();
-	// model.addRow(new Object[]{_x, _y});
     }
 }
 
