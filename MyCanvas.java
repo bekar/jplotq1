@@ -1,8 +1,4 @@
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Ellipse2D;
@@ -31,17 +27,6 @@ class MyCanvas extends JPanel {
 	setBorder(BorderFactory.createEtchedBorder());
 	setBackground(Color.white);
     }
-
-    /*public void update_data(DefaultTableModel dtm) {
-      for (int i = 0; i < dtm.getRowCount(); i++) {
-      // dtm.getValueAt(i, 1)
-      data.add(5);
-      }
-
-      // for(int i=0; i < raw_data.length; i++) {
-      // data.add(raw_data[i]);
-      // }
-      }*/
 
     protected void paintComponent(Graphics g) {
 	super.paintComponent(g);
@@ -90,11 +75,10 @@ class MyCanvas extends JPanel {
 	if (data.size() > 1) // if data set contains only one data
 	    xInc = (double) (w - 2 * PAD) / (data.size() - 1);
 
-	if (getMax() > 0)	// if the data set contains only zero
+	if (getMax() > 0) // if the data set contains only zero
 	    scale = (double) (h - 2 * PAD) / getMax();
 
 	// Mark data points.
-
 	for (int i = 0; i < data.size(); i++) {
 	    x = PAD + i * xInc;
 	    y = h - PAD - scale * data.get(i);
@@ -130,9 +114,4 @@ class MyCanvas extends JPanel {
 	}
 	return max;
     }
-
-    /*public void clear_canvas() {
-      System.out.println("clear canvas");
-      repaint();
-      }*/
 }
