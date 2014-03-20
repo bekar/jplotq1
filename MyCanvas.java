@@ -9,7 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 
-class MyCanvas extends JPanel {
+class MyCanvas extends JPanel implements Observer{
     public ArrayList<Integer> data = new ArrayList<Integer>();
 
     boolean join = true;
@@ -113,5 +113,9 @@ class MyCanvas extends JPanel {
 		max = data.get(i);
 	}
 	return max;
+    }
+
+    public void dataUpdate(Data d) {
+	repaint();
     }
 }

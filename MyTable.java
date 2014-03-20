@@ -6,7 +6,8 @@ import java.util.Random;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-class MyTable extends JPanel {
+class MyTable extends JPanel implements Observer{
+    // public Data d;
     JTextField xentry, yentry;
     JTable tbl;
     MyCanvas canvas;
@@ -163,13 +164,18 @@ class MyTable extends JPanel {
 	Object[] newdata = { _x, _y };
 
 	dtm.addRow(newdata);
+	canvas.data.add(_y);
 
+	Data d = new Data();
+        d.addObserver(this);
+        d.addObserver(canvas);
+	d.add(_x, _y);
+    }
+
+    public void dataUpdate(Data d) {
 	if (rand_fill) {
 	    xentry.setText(String.valueOf(tbl.getRowCount()));
 	    yentry.setText(String.valueOf(50 * seed.nextDouble()));
 	}
-
-	canvas.data.add(_y);
-	repaint();
     }
 }

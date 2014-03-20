@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 class Root extends JFrame {
+    public MyTable table;
     public Root() {
 	super("jgraphq1");
 
@@ -25,7 +26,6 @@ class Root extends JFrame {
 	    });
     }
 
-    MyTable table;
     public void build(Container panel) {
 	panel.setLayout(new GridBagLayout());
 	GridBagConstraints gbc = new GridBagConstraints();
